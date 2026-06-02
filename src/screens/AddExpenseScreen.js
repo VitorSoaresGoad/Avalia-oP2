@@ -6,6 +6,7 @@ import { styles } from '../styles/styles';
 
 export default function AddExpenseScreen({ route, navigation }) {
   const gastoParaEditar = route.params?.gasto || null;
+  const isDarkMode = route.params?.isDarkMode || false;
 
   const [descricao, setDescricao] = useState('');
   const [categoria, setCategoria] = useState('');
@@ -64,26 +65,29 @@ export default function AddExpenseScreen({ route, navigation }) {
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{gastoParaEditar ? 'Editar Gasto' : 'Novo Gasto'}</Text>
+    <View style={isDarkMode ? styles.darkContainer : styles.container}>
+      <Text style={isDarkMode ? styles.darkTitle : styles.title}>{gastoParaEditar ? 'Editar Gasto' : 'Novo Gasto'}</Text>
       
       <TextInput
-        style={styles.input}
+        style={isDarkMode ? styles.darkInput : styles.input}
+        placeholderTextColor={isDarkMode ? '#888' : '#aaa'}
         placeholder="Descrição do gasto"
         value={descricao}
         onChangeText={setDescricao}
       />
       <TextInput
-        style={styles.input}
+        style={isDarkMode ? styles.darkInput : styles.input}
+        placeholderTextColor={isDarkMode ? '#888' : '#aaa'}
         placeholder="Categoria (ex: Alimentação)"
         value={categoria}
         onChangeText={setCategoria}
       />
       
-      <View style={styles.currencyContainer}>
-        <Text style={styles.currencySymbol}>R$</Text>
+      <View style={isDarkMode ? styles.darkCurrencyContainer : styles.currencyContainer}>
+        <Text style={isDarkMode ? styles.darkCurrencySymbol : styles.currencySymbol}>R$</Text>
         <TextInput
-          style={styles.inputFlex}
+          style={isDarkMode ? styles.darkInputFlex : styles.inputFlex}
+          placeholderTextColor={isDarkMode ? '#888' : '#aaa'}
           placeholder="50.00"
           keyboardType="numeric"
           value={valor}
@@ -92,7 +96,8 @@ export default function AddExpenseScreen({ route, navigation }) {
       </View>
 
       <TextInput
-        style={styles.input}
+        style={isDarkMode ? styles.darkInput : styles.input}
+        placeholderTextColor={isDarkMode ? '#888' : '#aaa'}
         placeholder="Data (ex: 15/10/2023)"
         keyboardType="numeric"
         value={data}

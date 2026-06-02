@@ -3,14 +3,14 @@ import { View, Text, TouchableOpacity } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 import { styles } from '../styles/styles';
 
-export default function ExpenseItem({ data, onDelete, onEdit }) {
+export default function ExpenseItem({ data, onDelete, onEdit, isDarkMode }) {
   return (
-    <View style={styles.card}>
+    <View style={isDarkMode ? styles.darkCard : styles.card}>
       <View>
-        <Text style={styles.cardTitle}>{data.descricao}</Text>
-        <Text style={styles.cardText}>Categoria: {data.categoria}</Text>
-        <Text style={styles.cardText}>Data: {data.data}</Text>
-        <Text style={styles.cardText}>
+        <Text style={isDarkMode ? styles.darkCardTitle : styles.cardTitle}>{data.descricao}</Text>
+        <Text style={isDarkMode ? styles.darkCardText : styles.cardText}>Categoria: {data.categoria}</Text>
+        <Text style={isDarkMode ? styles.darkCardText : styles.cardText}>Data: {data.data}</Text>
+        <Text style={isDarkMode ? styles.darkCardText : styles.cardText}>
           Valor: R$ {data.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
         </Text>
       </View>

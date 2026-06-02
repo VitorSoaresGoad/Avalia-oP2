@@ -9,17 +9,33 @@ import { styles } from '../styles/styles';
 export default function HomeScreen({ navigation }) {
   const [gastos, setGastos] = useState([]);
   const [total, setTotal] = useState(0);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [ordenacao, setOrdenacao] = useState('recentes');
 
   useFocusEffect(
     useCallback(() => {
       carregarDados();
-    }, [])
+    }, [ordenacao])
   );
 
   async function carregarDados() {
-    const dados = await listarGastos();
+    let dados = await listarGastos();
+
+    dados.sort((a, b) => {
+      if (ordenacao === 'maiorValor') {
+        return b.valor - a.valor;
+      } else {
+        const dataA = a.data.split('/').reverse().join('');
+        const dataB = b.data.split('/').reverse().join('');
+        if (ordenacao === 'recentes') {
+          return dataB.localeCompare(dataA);
+        } else {
+          return dataA.localeCompare(dataB);
+        }
+      }
+    });
+
     setGastos(dados);
-    
     const soma = dados.reduce((acc, atual) => acc + atual.valor, 0);
     setTotal(soma);
   }
@@ -42,18 +58,42 @@ export default function HomeScreen({ navigation }) {
   }
 
   function handleEditar(gasto) {
-    navigation.navigate('AddExpense', { gasto: gasto });
+    navigation.navigate('AddExpense', { gasto: gasto, isDarkMode: isDarkMode });
+  }
+
+  function alternarOrdenacao() {
+    if (ordenacao === 'recentes') setOrdenacao('antigos');
+    else if (ordenacao === 'antigos') setOrdenacao('maiorValor');
+    else setOrdenacao('recentes');
+  }
+
+  function getTextoOrdenacao() {
+    if (ordenacao === 'recentes') return 'Mais Novos';
+    if (ordenacao === 'antigos') return 'Mais Antigos';
+    return 'Maior Valor';
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.totalText}>
+    <View style={isDarkMode ? styles.darkContainer : styles.container}>
+      <Text style={isDarkMode ? styles.darkTotalText : styles.totalText}>
         Total Gasto: R$ {total.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
       </Text>
       
+      <View style={styles.headerButtons}>
+        <TouchableOpacity style={styles.secondaryButton} onPress={() => setIsDarkMode(!isDarkMode)}>
+          <FontAwesome name={isDarkMode ? "sun-o" : "moon-o"} size={16} color="white" />
+          <Text style={styles.buttonText}>{isDarkMode ? "Claro" : "Escuro"}</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.secondaryButton} onPress={alternarOrdenacao}>
+          <FontAwesome name="sort" size={16} color="white" />
+          <Text style={styles.buttonText}>{getTextoOrdenacao()}</Text>
+        </TouchableOpacity>
+      </View>
+
       <TouchableOpacity 
         style={[styles.button, { marginBottom: 15 }]} 
-        onPress={() => navigation.navigate('AddExpense')}
+        onPress={() => navigation.navigate('AddExpense', { isDarkMode: isDarkMode })}
       >
         <FontAwesome name="plus-circle" size={20} color="white" />
         <Text style={styles.buttonText}>Adicionar Novo Gasto</Text>
@@ -67,13 +107,14 @@ export default function HomeScreen({ navigation }) {
             data={item} 
             onDelete={handleExcluir} 
             onEdit={handleEditar} 
+            isDarkMode={isDarkMode}
           />
         )}
-        ListEmptyComponent={<Text style={{ textAlign: 'center', marginTop: 20 }}>Nenhum gasto cadastrado.</Text>}
+        ListEmptyComponent={<Text style={isDarkMode ? styles.darkEmptyText : styles.emptyText}>Nenhum gasto cadastrado.</Text>}
       />
-      
-      <Text style={{ textAlign: 'center', color: '#888', marginTop: 15, fontSize: 12, fontWeight: 'bold' }}>
-       Vitor Luiz Soares da Silva
+
+      <Text style={styles.footerText}>
+        Desenvolvido por Vitor Luiz Soares da Silva
       </Text>
     </View>
   );
